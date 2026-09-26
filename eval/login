@@ -1,0 +1,8 @@
+curl --request POST \
+  --url http://localhost:5000/customer/login \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "username": "virzen",
+  "password": "1234"
+}'
+{"message":"User logged in successffully"}

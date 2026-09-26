@@ -1,0 +1,17 @@
+curl --request GET --url http://localhost:5000/review/1
+{
+  "virzen": "This is a rather nice book",
+  "person": "This is not a very nice book"
+}
+
+curl --request DELETE \
+  --url http://localhost:5000/customer/auth/review/1
+{
+  "message": "Review deleted successfully"
+}
+
+curl --request GET \
+  --url http://localhost:5000/review/1
+{
+  "virzen": "This is a rather nice book"
+}
