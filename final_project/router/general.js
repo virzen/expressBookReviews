@@ -89,4 +89,24 @@ public_users.get("/review/:isbn", function (req, res) {
   res.json(book.reviews)
 });
 
+fetch("http://localhost:5000/")
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error(error));
+
+fetch("http://localhost:5000/author/Unknown")
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error(error));
+
+fetch("http://localhost:5000/isbn/4")
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error(error));
+
+fetch("http://localhost:5000/title/Pride and Prejudice")
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error(error));
+
 module.exports.general = public_users;
