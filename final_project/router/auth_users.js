@@ -8,14 +8,11 @@ const { SECRET } = require('../env.js');
 let users = [];
 
 function hashPassword(password) {
-  console.log("Input password", password)
   const hasher = crypto.createHash("sha512");
 
   hasher.update(password);
 
   const hash = hasher.digest().toString("utf-8");
-
-  console.log("Hash:", hash);
 
   return hash;
 }
@@ -31,8 +28,6 @@ const isValid = (username) => {
  */
 const authenticatedUser = (username, password) => {
   const passwordHash = hashPassword(password);
-
-  console.log(users)
 
   const userIndex = users.findIndex(
     (u) => u.username === username && u.passwordHash === passwordHash,
@@ -54,8 +49,6 @@ regd_users.post("/login", (req, res) => {
 
   const token = jwt.sign({ username: username }, SECRET, { expiresIn: 60 * 60 });
   req.session.token = token;
-
-  console.log("token saved: ", token)
 
   return res.status(200).json({ message: "User logged in successffully" });
 });
