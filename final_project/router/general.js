@@ -72,7 +72,7 @@ public_users.get("/isbn/:isbn", function (req, res) {
   const book = books[isbn];
 
   if (!book) {
-    res.status(404).send();
+    res.status(404).send({ message: "Book not found" });
     return;
   }
 
@@ -105,39 +105,35 @@ public_users.get("/review/:isbn", function (req, res) {
   const book = books[isbn];
 
   if (!book) {
-    res.status(404).send();
+    res.status(404).send({ message: "Book not found" });
     return;
   }
 
   res.json(book.reviews)
 });
 
+const handleError = (message) => (error) => {
+  if (error.status === 404) {
+    console.error(message);
+  } else {
+    console.error(error);
+  }
+}
+
 axios("http://localhost:5000/")
   .then(response => console.log(response.data))
-  .catch(error => console.error(error));
+  .catch(handleError("Books not found"));
 
 axios("http://localhost:5000/author/Unknown")
   .then(response => console.log(response.data))
-  .catch(error => {
-    if (error.status === 404) {
-      console.error("Book not found by author");
-    } else {
-      console.error(error);
-    }
-  });
+  .catch(handleError("Book not found by author"));
 
-axios("http://localhost:5000/isbn/4")
+axios("http://localhost:5000/isbn/15")
   .then(response => console.log(response.data))
-  .catch(error => {
-    if (error.status === 404) {
-      console.error("Book not found by ISBN");
-    } else {
-      console.error(error);
-    } 
-  });
+  .catch(handleError("Book not found by ISBN"));
   
 axios("http://localhost:5000/title/Pride and Prejudice")
   .then(response => console.log(response.data))
-  .catch(error => console.error(error));
+  .catch(handleError("Book not found by title"));
 
 module.exports.general = public_users;
