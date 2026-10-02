@@ -1,9 +1,7 @@
 const express = require("express");
-const jwt = require("jsonwebtoken");
 let books = require("./booksdb.js");
 const regd_users = express.Router();
 const crypto = require("node:crypto");
-const { SECRET } = require('../env.js');
 
 let users = [];
 
@@ -36,31 +34,13 @@ const authenticatedUser = (username, password) => {
   return userIndex !== -1;
 };
 
-//only registered users can login
-regd_users.post("/login", (req, res) => {
-  const { username, password } = req.body;
-
-  const isAuthenticated = authenticatedUser(username, password);
-
-  if (!isAuthenticated) {
-    res.status(401).send();
-    return;
-  }
-
-  const token = jwt.sign({ username: username }, SECRET, { expiresIn: 60 * 60 });
-  req.session.token = token;
-  req.session.username = username;
-
-  return res.status(200).json({ message: "User logged in successffully" });
-});
-
 regd_users.post("/logout", (req, res) => {
   req.session.destroy();
   res.send();
 })
 
 // Add a book review
-regd_users.put("/auth/review/:isbn", (req, res) => {
+regd_users.put("/review/:isbn", (req, res) => {
   const { isbn } = req.params;
   const book = books[isbn];
   const content = req.body.content;
@@ -78,10 +58,10 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
 
   book.reviews[username] = content;
 
-  return res.status(200).json({ message: "Review added successfully" });
+  return res.status(200).json({ message: `Review by ${username} successfully added to book ${isbn}` });
 });
 
-regd_users.delete("/auth/review/:isbn", (req, res) => {
+regd_users.delete("/review/:isbn", (req, res) => {
   const { isbn } = req.params;
   const book = books[isbn];
   const username = req.session.username;
@@ -93,10 +73,11 @@ regd_users.delete("/auth/review/:isbn", (req, res) => {
 
   delete book.reviews[username];
 
-  return res.status(200).json({ message: "Review deleted successfully" });
+  return res.status(200).json({ message: `Review deleted successfully from book ${isbn}` });
 });
 
 module.exports.authenticated = regd_users;
+module.exports.authenticatedUser = authenticatedUser;
 module.exports.isValid = isValid;
 module.exports.users = users;
 module.exports.hashPassword = hashPassword;

@@ -3,6 +3,9 @@ let books = require("./booksdb.js");
 let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
 let hashPassword = require("./auth_users.js").hashPassword;
+let authenticatedUser = require("./auth_users.js").authenticatedUser;
+const jwt = require("jsonwebtoken");
+const { SECRET } = require('../env.js');
 const public_users = express.Router();
 
 public_users.post("/register", (req, res) => {
@@ -40,6 +43,23 @@ public_users.post("/register", (req, res) => {
 // Get the book list available in the shop
 public_users.get("/", function (req, res) {
   res.json(books);
+});
+
+public_users.post("/login", (req, res) => {
+  const { username, password } = req.body;
+
+  const isAuthenticated = authenticatedUser(username, password);
+
+  if (!isAuthenticated) {
+    res.status(401).send();
+    return;
+  }
+
+  const token = jwt.sign({ username: username }, SECRET, { expiresIn: 60 * 60 });
+  req.session.token = token;
+  req.session.username = username;
+
+  return res.status(200).json({ message: "User logged in successffully" });
 });
 
 // Get book details based on ISBN

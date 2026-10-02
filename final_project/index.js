@@ -9,12 +9,16 @@ const app = express();
 
 app.use(express.json());
 
+const sessionMiddleware = session({ secret: SECRET, resave: true, saveUninitialized: true });
 app.use(
   "/customer",
-  session({ secret: SECRET, resave: true, saveUninitialized: true }),
+  sessionMiddleware,
 );
+app.use("/login", sessionMiddleware);
+app.use("/logout", sessionMiddleware);
+app.use("/review", sessionMiddleware);
 
-app.use("/customer/auth/*", function auth(req, res, next) {
+function auth(req, res, next) {
   const { session } = req;
 
   const { token } = session;
@@ -33,11 +37,14 @@ app.use("/customer/auth/*", function auth(req, res, next) {
   }
 
   next();
-});
+}
+
+app.use("/logout", auth);
+app.use("/review/*", auth);
 
 const PORT = 5000;
 
-app.use("/customer", customer_routes);
+app.use("/", customer_routes);
 app.use("/", genl_routes);
 
 app.listen(PORT, () => console.log("Server is running on port " + PORT));

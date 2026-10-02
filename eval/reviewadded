@@ -1,5 +1,5 @@
 curl --request POST \
-  --url http://localhost:5000/customer/login \
+  --url http://localhost:5000/login \
   --header 'Content-Type: application/json' \
   --data '{
   "username": "virzen",
@@ -11,18 +11,20 @@ curl --request GET --url http://localhost:5000/review/1
 {}
 
 curl --request PUT \
-  --url http://localhost:5000/customer/auth/review/1 \
+  --url http://localhost:5000/review/1 \
   --header 'Content-Type: application/json' \
   --data '{
   "content": "This is a rather nice book"
 }'
-{"message": "Review added successfully"}
+{
+  "message": "Review by virzen successfully added to book 1"
+}
 
 curl --request GET --url http://localhost:5000/review/1
 {"virzen": "This is a rather nice book"}
 
 curl --request POST \
-  --url http://localhost:5000/customer/login \
+  --url http://localhost:5000/login \
   --header 'Content-Type: application/json' \
   --data '{
   "username": "person",
@@ -33,13 +35,13 @@ curl --request POST \
 }
 
 curl --request PUT \
-  --url http://localhost:5000/customer/auth/review/1 \
+  --url http://localhost:5000/review/1 \
   --header 'Content-Type: application/json' \
   --data '{
   "content": "This is not a very nice book"
 }'
 {
-  "message": "Review added successfully"
+  "message": "Review by person successfully added to book 1"
 }
 
 curl --request GET \
