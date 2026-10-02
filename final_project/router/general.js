@@ -7,6 +7,8 @@ let hashPassword = require("./auth_users.js").hashPassword;
 let authenticatedUser = require("./auth_users.js").authenticatedUser;
 const jwt = require("jsonwebtoken");
 const { SECRET } = require('../env.js');
+
+// Public routes for user access and book catalog lookups.
 const public_users = express.Router();
 
 public_users.post("/register", (req, res) => {
@@ -77,7 +79,7 @@ public_users.get("/isbn/:isbn", function (req, res) {
   res.json(book);
 });
 
-// Get book details based on author
+// Find books with an exact, case-sensitive match for the requested author.
 public_users.get("/author/:author", function (req, res) {
   const { author } = req.params;
   const booksList = Object.values(books);
@@ -87,7 +89,7 @@ public_users.get("/author/:author", function (req, res) {
   res.json(result);
 });
 
-// Get all books based on title
+// Find books with an exact, case-sensitive match for the requested title.
 public_users.get("/title/:title", function (req, res) {
   const { title } = req.params;
   const booksList = Object.values(books);
