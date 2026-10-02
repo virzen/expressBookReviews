@@ -6,7 +6,7 @@ let users = require("./auth_users.js").users;
 let hashPassword = require("./auth_users.js").hashPassword;
 let authenticatedUser = require("./auth_users.js").authenticatedUser;
 const jwt = require("jsonwebtoken");
-const { SECRET } = require('../env.js');
+const { SECRET } = require("../env.js");
 
 // Public routes for user access and book catalog lookups.
 const public_users = express.Router();
@@ -26,7 +26,7 @@ public_users.post("/register", (req, res) => {
   }
 
   if (!isValid(body.username)) {
-    res.status(400).json({ message: "Username already taken" })
+    res.status(400).json({ message: "Username already taken" });
     return;
   }
 
@@ -58,7 +58,9 @@ public_users.post("/login", (req, res) => {
     return;
   }
 
-  const token = jwt.sign({ username: username }, SECRET, { expiresIn: 60 * 60 });
+  const token = jwt.sign({ username: username }, SECRET, {
+    expiresIn: 60 * 60,
+  });
   req.session.token = token;
   req.session.username = username;
 
@@ -84,7 +86,7 @@ public_users.get("/author/:author", function (req, res) {
   const { author } = req.params;
   const booksList = Object.values(books);
 
-  const result = booksList.filter(b => b.author === author);
+  const result = booksList.filter((b) => b.author === author);
 
   res.json(result);
 });
@@ -94,7 +96,7 @@ public_users.get("/title/:title", function (req, res) {
   const { title } = req.params;
   const booksList = Object.values(books);
 
-  const result = booksList.filter(b => b.title === title);
+  const result = booksList.filter((b) => b.title === title);
 
   res.json(result);
 });
@@ -109,31 +111,39 @@ public_users.get("/review/:isbn", function (req, res) {
     return;
   }
 
-  res.json(book.reviews)
+  res.json(book.reviews);
 });
 
-const handleError = (message) => (error) => {
+const handleRequestSuccess = (errorMessage) => (response) => {
+  if (Array.isArray(response.data) && response.data.length === 0) {
+    console.error(errorMessage);
+  } else {
+    console.log(response.data);
+  }
+};
+
+const handleRequestError = (message) => (error) => {
   if (error.status === 404) {
     console.error(message);
   } else {
     console.error(error);
   }
-}
+};
 
 axios("http://localhost:5000/")
-  .then(response => console.log(response.data))
-  .catch(handleError("Books not found"));
+  .then(handleRequestSuccess("No books found"))
+  .catch(handleRequestError(""));
 
-axios("http://localhost:5000/author/Unknown")
-  .then(response => console.log(response.data))
-  .catch(handleError("Book not found by author"));
+axios("http://localhost:5000/author/asdf")
+  .then(handleRequestSuccess("The author does not exist in the database"))
+  .catch(handleRequestError("Book not found by author"));
 
 axios("http://localhost:5000/isbn/15")
-  .then(response => console.log(response.data))
-  .catch(handleError("Book not found by ISBN"));
-  
+  .then((response) => console.log(response.data))
+  .catch(handleRequestError("Book not found by ISBN"));
+
 axios("http://localhost:5000/title/Pride and Prejudice")
-  .then(response => console.log(response.data))
-  .catch(handleError("Book not found by title"));
+  .then(handleRequestSuccess("The title does not exist in the database"))
+  .catch(handleRequestError("Book not found by title"));
 
 module.exports.general = public_users;
