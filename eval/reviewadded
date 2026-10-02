@@ -1,3 +1,13 @@
+curl --request PUT \
+  --url http://localhost:5000/review/1 \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "content": "This is a rather nice book"
+}'
+{
+  "message": "You must be logged-in to use this feature"
+}
+
 curl --request POST \
   --url http://localhost:5000/login \
   --header 'Content-Type: application/json' \

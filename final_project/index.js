@@ -24,7 +24,7 @@ function auth(req, res, next) {
   const { token } = session;
 
   if (!token) {
-    res.status(401).send();
+    res.status(401).send({ message: "You must be logged-in to use this feature" });
     return;
   }
 
@@ -32,7 +32,7 @@ function auth(req, res, next) {
   try {
     result = jwt.verify(token, SECRET);
   } catch (e) {
-    res.status(401).send()
+    res.status(401).send({ message: "Invalid or expired token" });
     return;
   }
 
