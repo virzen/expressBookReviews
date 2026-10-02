@@ -1,3 +1,9 @@
+curl --request DELETE \
+  --url http://localhost:5000/review/1
+{
+  "message": "You must be logged-in to use this feature"
+}
+
 curl --request POST \
   --url http://localhost:5000/login \
   --header 'Content-Type: application/json' \
